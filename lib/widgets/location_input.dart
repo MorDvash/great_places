@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:great_places/middleware/location_helper.dart';
+import 'package:great_places/screen/map_screen.dart';
+import 'package:location/location.dart';
 
 class LocationInput extends StatefulWidget {
   const LocationInput({Key? key}) : super(key: key);
@@ -9,6 +12,33 @@ class LocationInput extends StatefulWidget {
 
 class _LocationInputState extends State<LocationInput> {
   String? _previewImage;
+
+  Future<void> getCurrentLocation() async {
+    final locationData = await Location().getLocation();
+    final _staticImage = LocationHelper.generateLocationPreviewImage(
+        locationData.latitude as double, locationData.longitude as double);
+    print(_staticImage);
+    setState(() {
+      _previewImage = _staticImage;
+      print(_previewImage);
+    });
+  }
+
+  Future<void> _selectOnMap() async {
+    final selectedLocation = await Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (ctx) => MapScreen(
+          isSelecting: true,
+        ),
+      ),
+    );
+    if (selectedLocation == null) {
+      return;
+    }
+    // ...
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -25,7 +55,7 @@ class _LocationInputState extends State<LocationInput> {
                   textAlign: TextAlign.center,
                 )
               : Image.network(
-                  _previewImage!,
+                  _previewImage as String,
                   fit: BoxFit.cover,
                   width: double.infinity,
                 ),
@@ -35,12 +65,12 @@ class _LocationInputState extends State<LocationInput> {
           children: [
             ElevatedButton.icon(
               icon: Icon(Icons.location_on),
-              onPressed: () {},
+              onPressed: getCurrentLocation,
               label: const Text('Current location'),
             ),
             ElevatedButton.icon(
               icon: Icon(Icons.map),
-              onPressed: () {},
+              onPressed: _selectOnMap,
               label: const Text('Select on the map'),
             ),
           ],
