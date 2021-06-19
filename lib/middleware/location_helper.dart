@@ -1,4 +1,3 @@
-const GOOGLE_API_KEY = 'AIzaSyDmn_VK5JT0efXTW7dVy-syqeptmu7FyIg';
 
 class LocationHelper {
   static String generateLocationPreviewImage(
